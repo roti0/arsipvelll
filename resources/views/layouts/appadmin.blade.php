@@ -7,12 +7,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Laravel') }}</title>
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-    <script src="{{ asset('js/sb-admin-2.min.js') }}" defer></script>
+
+    
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/sb-admin-2.min.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('js/my.js') }}" defer></script>
     <!-- Styles -->
     <link rel="stylesheet" href="{{asset('css/sb-admin-2.min.css')}}">
     <link rel="stylesheet" href="{{asset('fontawesome-free/css/all.min.css')}}" type="text/css" >
@@ -20,16 +23,43 @@
 </head>
 <body>
 <div id="app">   
-  <!-- Page Wrapper -->
-  <div id="wrapper">
+  <!-- Page Wrapper --> 
 @guest
-    
+
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+      <div class="container">
+          <a class="navbar-brand" href="{{ url('/') }}">
+              {{ config('app.name', 'Laravel') }}
+          </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <!-- Left Side Of Navbar -->
+              <ul class="navbar-nav mr-auto">
+
+              </ul>
+
+              <!-- Right Side Of Navbar -->
+              <ul class="navbar-nav ml-auto">
+                  
+                      <li class="nav-item">
+                          <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                      </li>                            
+                  
+              </ul>
+          </div>
+      </div>
+    </nav>
+
 @else
+<div id="wrapper">
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('home')}}">
               <i class="fas fa-laugh-wink"></i>
           <div class="sidebar-brand-text mx-3"> {{ config('app.name', 'Laravel') }}</div>
         </a>
@@ -52,7 +82,7 @@
           Interface
         </div>
   
-        <!-- Nav Item - Pages Collapse Menu -->
+        @if (Auth::user()->level==1)                   
         <li class="nav-item">
           <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
             <i class="fas fa-users"></i>
@@ -80,6 +110,7 @@
             </div>
           </div>
         </li>
+        
         <li class="nav-item">
             <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseDivision" aria-expanded="true" aria-controls="collapseUtilities">
                 <i class="fas fa-braille"></i>
@@ -96,16 +127,45 @@
   
         <!-- Divider -->
         <hr class="sidebar-divider">
-  
+        
+        @else
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+            <i class="fas fa-users"></i>
+            <span>Employee</span>
+          </a>
+          <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <h6 class="collapse-header">Employee Menu:</h6>
+              <a class="collapse-item" href="{{route('user.myattendance')}}">My Attendances</a>              
+            </div>
+          </div>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
+              <i class="fas fa-dollar-sign"></i>
+            <span>Salaries</span>
+          </a>
+          <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
+              <h6 class="collapse-header">Salaries Menu:</h6>
+              <a class="collapse-item" href="{{route('user.mypayment')}}">My Payments</a>
+            </div>
+          </div>
+        </li>
+        @endif
   
         <!-- Sidebar Toggler (Sidebar) -->
         <div class="text-center d-none d-md-inline">
           <button class="rounded-circle border-0" id="sidebarToggle"></button>
         </div>
-  
+        
+       
+
       </ul>
       <!-- End of Sidebar -->
-@endguest
+
     
 
     <!-- Content Wrapper -->
@@ -117,18 +177,6 @@
         <!-- Topbar -->
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                <!-- Topbar Search -->
-                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                <div class="input-group">
-                  <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                  <div class="input-group-append">
-                    <button class="btn btn-primary" type="button">
-                      <i class="fas fa-search fa-sm"></i>
-                    </button>
-                  </div>
-                </div>
-                </form>
-    
               <!-- Topbar Navbar -->
               <ul class="navbar-nav ml-auto">
     
@@ -171,22 +219,17 @@
                       Settings
                     </a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{{route('logout')}}" data-toggle="modal" data-target="#logoutModal"
-                    onclick="event.preventDefault();
-                    document.getElementById('logout-form').submit();">
+                    <a class="dropdown-item" href="" data-toggle="modal" data-target="#logoutModal">
                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                     {{ __('Logout') }}
                     </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                    @csrf
-                    </form>
                   </div>
                 </li>
     
               </ul>
         </nav>
         <!-- End of Topbar -->
-
+@endguest
         <!-- Begin Page Content -->
         <div class="container-fluid">
                 <main class="py-4">
@@ -202,7 +245,7 @@
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2019</span>
+            <span>Copyright &copy; Arsipvel 2019</span>
           </div>
         </div>
       </footer>
@@ -212,22 +255,31 @@
   </div>
   <!-- End of Page Wrapper -->
 </div>
-<script>
-  $(document).ready(function () {
-    console.log('mantap')
-    $('#divisi').on('change',function(ae){
-      console.log(ae);
-      var divisi_id = ae.target.value;
-      $.get('/ajax/'+ divisi_id,function (data) {
-        $('#job').empty();
-        $('#job').append('<option value="0" disabled selected >--Choose Job--</option>');
 
-        $.each(data,function (index,jobObj) {
-          $('#job').append('<option value="'+jobObj.id_jobs+'">'+jobObj.job_name+'</option>');
-        });
-      });
-    });
-  });
-</script>
+  {{-- Logout Pop Up --}}
+
+  <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+            <a class="btn btn-primary" href="{{route('logout')}}" onclick="event.preventDefault();
+            document.getElementById('logout-form').submit();">Logout</a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
 </body>
+
 </html>

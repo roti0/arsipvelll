@@ -14,6 +14,17 @@
                     </span>
                     <span class="text">Fired Employee</span>
             </a>
+            <form action="{{route('admin.searchuserfire')}}" method="GET" class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+                    @csrf    
+                    <div class="input-group">
+                            <input type="text" id="search" name="search" class="form-control border-0 small" placeholder="Search for Fired..." aria-label="Search" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                            <button class="btn btn-primary" type="submit" type="button">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                            </div>
+                        </div>
+                </form>
         <div class="card shadow mb-4 mt-4">
                 <div class="card-header py-3">
                   <h6 class="m-0 font-weight-bold text-primary">Fired Employee</h6>
@@ -43,6 +54,7 @@
                                 </tr>
                                 @endforeach
                             </table>
+                            {{$dashboard->links()}}
                         </div>
                     </div>
                 </div>

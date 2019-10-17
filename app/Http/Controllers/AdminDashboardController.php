@@ -6,6 +6,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Divisi;
 use App\Jobs;
+use phpDocumentor\Reflection\Types\This;
 use Symfony\Component\Console\Input\Input;
 
 class AdminDashboardController extends Controller
@@ -18,17 +19,32 @@ class AdminDashboardController extends Controller
     public function index()
     {
         // $user = User::all();
-    
+        $dashboard = User::join('jobs', function ($join) {
+            $join->on('jobs.id_jobs', '=', 'users.job')->join('divisis','divisis.id_divisi','=','jobs.divisi');
+        })->where('status','=','1')
+        ->get();
+        return view('admin.index',compact('dashboard'));
     }
 
 
     public function showfired()
     {
         $dashboard = User::join('jobs', function ($join) {
-            $join->on('jobs.id_jobs', '=', 'users.job')->join('divisis','divisis.id_divisi','=','jobs.divisi');
+        $join->on('jobs.id_jobs', '=', 'users.job')->join('divisis','divisis.id_divisi','=','jobs.divisi');
         })->where('status','=','0')
         ->get();
         return view('admin.fired',compact('dashboard'));
+    }
+
+    public function fire(Request $request,$data){
+        $user = User::find($data);
+        if ($user->job == 1) {
+            return redirect()->back()->with('errorfire'," Admin Can't be fired " );
+        }else {
+            $user->status = $request['fire'];
+            $user->save();
+            return $this->showfired();
+        }      
     }
     /**
      * Show the form for creating a new resource.
@@ -40,10 +56,29 @@ class AdminDashboardController extends Controller
         //
     }
 
+    public function search(Request $request){
+        $user = User::search(request('search'));
+
+        $dashboard = $user->paginate(10);
+
+        $dashboard->appends($request->only('search'));
+        return view('admin.index',compact('dashboard'));
+    }
+
+    public function searchfire(Request $request){
+        $user = User::searchfire(request('search'));
+
+        $dashboard = $user->where('status','=','0')->paginate(10);
+
+        $dashboard->appends($request->only('search'));
+        return view('admin.fired',compact('dashboard'));
+    }
+
+
     public function ajax($divisi_id) {
         // $divisi_id = Input::get('divisi_id');
         $job = Jobs::where('divisi','=',$divisi_id)->get();
-        return Response::json($job);
+        return response()->json($job);
     }
     /**
      * Store a newly created resource in storage.

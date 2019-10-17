@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; 
 
 class UserDashboardController extends Controller
 {
@@ -13,7 +15,8 @@ class UserDashboardController extends Controller
      */
     public function index()
     {
-        return view('user.index');
+        $attendance = Attendance::where('userid' ,'=',Auth::user()->id)->paginate(10);
+        return view('user.myattendance',compact('attendance'));
     }
 
     /**

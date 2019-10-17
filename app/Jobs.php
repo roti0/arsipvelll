@@ -10,4 +10,6 @@ class Jobs extends Model
     protected $fillable = [
         'job_name','salary','divisi'
     ];
+
+    
 }

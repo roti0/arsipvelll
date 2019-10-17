@@ -5,38 +5,30 @@
     <div class="card-body">
         <div class="row">
         <div class="container col-lg-4">
-            <form class="user" action="" method="POST">
+            <form class="user" action="{{route('admin.createpayment')}}" method="POST">
                 {{ csrf_field() }}
-                <h2 class="pt-2">Make Attendance</h2>
+                <h2 class="pt-2">Make Payment</h2>
                     <hr>
                     <div class="form-group">
                         <label for="divisi">Division</label>
                         <select name="divisi" class="form-control" id="">
                             <option value="0">All</option>
-                            
+                            @foreach ($divisi as $item)
+                                <option value="{{$item->id_divisi}}">{{$item->division_name}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group">
-                            <label for="datefor">Date For</label>
-                            <input type="date" name="datefor" class="form-control" id="">
+                            <label for="monthfor">Month For</label>
+                            <input type="month" name="monthfor" class="form-control" id="">
                     </div>
-                    <div class="form-group">
-                        <label for="start">Start</label>
-                        <input type="time" class="form-control" name="start" id="" value="07:00">
-                    </div>
-                    <div class="form-group">
-                        <label for="end">End</label>
-                        <input name="end" type="time" class="form-control" value="14:00" >
-                    </div>                                         
-                    <hr>
-                    
                     <div class="form-group">                      
                         <input type="submit" class="btn btn-primary btn-user btn-block" value="Update Employee data">
                     </div>                    
             </form>
         </div>  
         <div class="col-lg-8 d-lg-block">
-            <h2 class="pt-2">Today Attendance</h2>
+            <h2 class="pt-2">Payment</h2>
             <hr>
             <div class="table-wrapper-scroll-y my-custom-scrollbar table-responsive">
                     <table width="100%" cellspacinf="0" class="table table-bordered" id="dataTable">
@@ -45,59 +37,32 @@
                             <th>Job</th>
                             <th>Division</th>
                             <th>Salary</th>
-                            <th>Date</th>
-                            <th>Present</th>
-                            <th>Out</th>
-                            <th>Attendance</th>
+                            <th>Bonus</th>
+                            <th>Salary Cuts</th>                               
+                            <th>Date Payment</th>
+                            <th>Total</th>
                             <th>Action</th>
                         </thead>
-                            <tr>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>
-                                
-                            </td>
-                            <td>
-                                
-                            </td>
-                            <td>
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalLong">
-                                    Edit
-                                </button>
-
-                                <div class="modal fade" id="ModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLongTitle">Edit</h5>
-                                
-                                            </div>
-                                           <div class="modal-body">
-                                               <form action="" method="POST">
-                                                    @method('PATCH')
-                                                    @csrf
-                                                    <div class="form-group">
-                                                            <label for="verified">Status</label>
-                                                            <select name="verified" class="form-control" id="">
-                                                                <option value="0">Absent</option>
-                                                                <option value="1">Attendance</option>    
-                                                            </select>    
-                                                    </div>
-                                                    <div class="form-group">
-                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                            <button type="input" class="btn btn-primary">Save changes</button>
-                                               </form>
-                                        </div>                                                                
-                                    </div>
-                                    </div>
-                                </div>
-                            </td>
-                            </tr>
+                        @foreach ($payment as $data)                                     
+                        <tr>                                                                                                                     
+                                <td>{{$data->name}}</td>                        
+                                <td>{{$data->job_name}}</td>
+                                <td>{{$data->division_name}}</td> 
+                                <td>{{$data->salary}}</td>                                      
+                                <td><input class="form-control" type="text" name="bonus" id="bonus" form="form-{{$data->id_salaries}}" value="{{$data->bonus}}" ></td>
+                                <td>{{$data->salary_cuts}}</td>
+                                <td>{{$data->datepayments}}</td>
+                                <td>{{$data->salary - $data->salary_cuts + $data->bonus}}</td>                                
+                                <td><form class="form-group" method="post" action="{{route('admin.updatepayment',$data)}}" id="form-{{$data->id_salaries}}">
+                                        @method('PATCH')                         
+                                        @csrf
+                                </form><button type="input" class="btn btn-primary" form="form-{{$data->id_salaries}}">Save changes</button></td>                                                                                             
+                        </tr> 
+                             
+                        @endforeach
                                                         
                     </table>
+                    {{$payment->links()}}
             </div>
         </div> 
     </div>

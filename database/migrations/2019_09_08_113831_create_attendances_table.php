@@ -20,7 +20,7 @@ class CreateAttendancesTable extends Migration
             $table->time('start');
             $table->time('end');
             $table->time('time_pressence')->nullable();
-            $table->dateTime('time_out')->nullable();
+            $table->time('time_out')->nullable();
             $table->boolean('verified')->default(0);
             $table->timestamps();
 

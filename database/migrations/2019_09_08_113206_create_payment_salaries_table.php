@@ -18,7 +18,6 @@ class CreatePaymentSalariesTable extends Migration
             $table->dateTime('datepayments');
             $table->unsignedBigInteger('userid');
             $table->bigInteger('bonus')->nullable();
-            $table->bigInteger('overtime')->nullable();
             $table->bigInteger('salary_cuts')->nullable();
             $table->timestamps();
 
