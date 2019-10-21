@@ -18,7 +18,6 @@ class Attendance extends Model
             $join->on('users.id','=','attendances.userid');
         })->where('userid','=',$id)->where('verified','=',0)->whereMonth('date_attendance',$carbon->month)
         ->whereYear('date_attendance',$carbon->year)->count();
-
         return($absent);
     }
 

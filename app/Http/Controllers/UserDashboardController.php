@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Attendance;
+use App\PaymentSalaries;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class UserDashboardController extends Controller
 {
@@ -15,8 +17,20 @@ class UserDashboardController extends Controller
      */
     public function index()
     {
-        $attendance = Attendance::where('userid' ,'=',Auth::user()->id)->paginate(10);
-        return view('user.myattendance',compact('attendance'));
+        $attendance = Attendance::where('userid', '=', Auth::user()->id)->paginate(10);
+        return view('user.myattendance', compact('attendance'));
+    }
+
+    public function payment()
+    {
+        $workday = Attendance::workday(Auth::user()->id, Carbon::today());
+        $absent = Attendance::absent(Auth::user()->id, Carbon::today());
+        $payment = PaymentSalaries::join('users', function ($join) {
+            $join->on('users.id', '=', 'payment_salaries.userid')
+                ->join('jobs', 'jobs.id_jobs', '=', 'users.job')
+                ->join('divisis', 'divisis.id_divisi', '=', 'jobs.divisi');
+        })->where('userid', '=', Auth::user()->id)->whereMonth('datepayments', Carbon::today()->month)->first();
+        return view('user.myinvoice', compact('payment','workday','absent'));
     }
 
     /**

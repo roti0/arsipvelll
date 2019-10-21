@@ -38,7 +38,7 @@
                             <th>Division</th>
                             <th>Salary</th>
                             <th>Bonus</th>
-                            <th>Salary Cuts</th>                               
+                            <th>Salary Cuts</th>
                             <th>Date Payment</th>
                             <th>Total</th>
                             <th>Action</th>
@@ -57,10 +57,8 @@
                                         @method('PATCH')                         
                                         @csrf
                                 </form><button type="input" class="btn btn-primary" form="form-{{$data->id_salaries}}">Save changes</button></td>                                                                                             
-                        </tr> 
-                             
+                        </tr>
                         @endforeach
-                                                        
                     </table>
                     {{$payment->links()}}
             </div>

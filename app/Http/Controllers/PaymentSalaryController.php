@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Attendance;
 use App\Divisi;
-use App\Jobs;
 use App\PaymentSalaries;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentSalaryController extends Controller
 {
@@ -24,9 +24,20 @@ class PaymentSalaryController extends Controller
             $join->on('users.id','=','payment_salaries.userid')
             ->join('jobs','jobs.id_jobs','=','users.job')
             ->join('divisis','divisis.id_divisi','=','jobs.divisi');
-        })->paginate(10);
+        })->paginate(8);
         // dd($payment);
         return view('admin.payment',compact('divisi','payment'));
+    }
+
+    public function download()
+    {
+        $payment = PaymentSalaries::join('users', function ($join) {
+            $join->on('users.id', '=', 'payment_salaries.userid')
+                ->join('jobs', 'jobs.id_jobs', '=', 'users.job')
+                ->join('divisis', 'divisis.id_divisi', '=', 'jobs.divisi');
+        })->where('userid', '=', Auth::user()->id)->whereMonth('datepayments', Carbon::today()->month)->first();
+        $pdf = \PDF::loadView('user.download',$payment);
+        return $pdf->download('invoice-'.Auth::user()->name.'.pdf');
     }
 
     /**
@@ -36,20 +47,25 @@ class PaymentSalaryController extends Controller
      */
     public function create(Request $request)
     {
-        $salary_cuts = 0;
+        
         $datepayments = Carbon::parse($request->monthfor)->toDateString();
         if ($request->divisi == 0) {
             $all = User::where('status','=','1')->get();
             foreach ($all as $data) {
+                $salary_cuts = 0;
                 $workday = Attendance::workday($data->id,$request->monthfor);
                 $absent = Attendance::absent($data->id,$request->monthfor);
                 $salary = User::employeeSalary($data->id);
                 if ($absent!=0) {
                     if ($workday==0) {
                         $workday=1;
+                        if ($workday<$workday) {
+                            $salary_cuts = ($absent/$workday)*$salary;
+                        } else {
+                            $salary_cuts = $salary;
+                        }
                     }
-                    $salary_cuts = ($absent/$workday)*$salary;
-                }                
+                }
                 PaymentSalaries::create([
                     'userid'=>$data->id,
                     'datepayments'=>$datepayments,

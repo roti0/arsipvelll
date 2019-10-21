@@ -24,6 +24,7 @@ Route::group(['middleware' => ['user','auth']], function () {
     Route::get('/home/mypayment','UserDashboardController@payment')->name('user.mypayment');
     Route::patch('/home/{attendance}','AttendanceController@userattendance')->name('user.attendance');
     Route::patch('/home/out/{out}','AttendanceController@outattendance')->name('user.outattendance');
+    Route::get('/home/mypayment/download','PaymentSalaryController@download')->name('user.download');
 });
 
 Route::get('/home', 'HomeController@index')->name('home');
